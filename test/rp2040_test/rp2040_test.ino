@@ -3,7 +3,12 @@
 // Create an instance of NeoPixelConnect and initialize it
 // to use GPIO pin 4 (D12) as the control pin, for a string
 // of 8 neopixels. Name the instance p
-NeoPixelConnect p(23, 20);
+int NUM_PIXELS = 48;
+
+NeoPixelConnect p(23, NUM_PIXELS);
+
+uint8_t pixelNumber = 0;
+bool isReverse = false;
 
 // this array will hold a pixel number and the rgb values for the
 // randomly generated pixel values
@@ -11,7 +16,23 @@ uint8_t random_pixel_setting[4];
 
 // select a random pixel number in the string
 uint8_t get_pixel_number(){
-    return((uint8_t)random(0,7));
+    // return((uint8_t)random(0,20));
+    if ( pixelNumber == NUM_PIXELS && isReverse == false ) {
+      isReverse = true;
+    } 
+
+    if ( pixelNumber == 0 && isReverse == true ) {
+      isReverse = false;
+    } 
+
+    if ( ! isReverse ) {
+      pixelNumber++;
+    } else {
+      pixelNumber--;
+    }
+    
+    // pixelNumber = 0;
+    return pixelNumber;
 }
 
 // select a random intensity
@@ -34,6 +55,10 @@ void setup(){
 
 void loop(){
 
+  for( int i =0; i <NUM_PIXELS; i++ ) {
+      p.neoPixelSetValue(i, 10, 0, 120, true);
+    }
+
     // get a pixel number
     get_random_pixel_and_color();
 
@@ -41,8 +66,19 @@ void loop(){
     p.neoPixelSetValue(random_pixel_setting[0], random_pixel_setting[1],
                        random_pixel_setting[2],
                        random_pixel_setting[3], true);
-    delay(100);
+
+// display the randomly assigned pixel and color
+    // p.neoPixelSetValue(random_pixel_setting[0]+20, random_pixel_setting[1],
+    //                    random_pixel_setting[2],
+    //                    random_pixel_setting[3], true);
+    
+    // p.neoPixelSetValue(random_pixel_setting[0]-20, random_pixel_setting[1],
+    //                    random_pixel_setting[2],
+    //                    random_pixel_setting[3], true);
+
+    // delay(50);
     // clear all pixels
-    p.neoPixelClear();
+    // p.neoPixelClear();
+
     delay(100);
 }
